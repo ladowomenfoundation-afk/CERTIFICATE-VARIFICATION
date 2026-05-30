@@ -6,10 +6,9 @@
 
 <style>
 body{
-  font-family: Arial, sans-serif;
+  font-family: Arial;
   background:#f4f6f9;
   margin:0;
-  padding:0;
 }
 
 .header{
@@ -19,94 +18,102 @@ body{
   padding:20px;
 }
 
-.header h1{
-  margin:0;
-  font-size:26px;
-}
-
-.header p{
-  margin:5px 0 0 0;
-  font-size:16px;
-  opacity:0.9;
-}
-
 .container{
-  max-width:700px;
+  max-width:600px;
   margin:40px auto;
   background:#fff;
-  padding:30px;
-  border-radius:12px;
-  box-shadow:0 0 15px rgba(0,0,0,0.1);
+  padding:20px;
+  border-radius:10px;
 }
 
-h2{
-  text-align:center;
-  color:#27ae60;
+input{
+  width:100%;
+  padding:12px;
+  margin:10px 0;
+  border:1px solid #ccc;
+  border-radius:6px;
 }
 
-p{
+button{
+  width:100%;
+  padding:12px;
+  background:#27ae60;
+  color:white;
+  border:none;
+  border-radius:6px;
+  cursor:pointer;
   font-size:16px;
-  padding:6px 0;
-  border-bottom:1px solid #eee;
+}
+
+.result{
+  margin-top:20px;
+  padding:15px;
+  border-top:1px solid #ddd;
 }
 
 .label{
   font-weight:bold;
-}
-
-.status{
-  font-weight:bold;
-  color:green;
-  font-size:18px;
 }
 </style>
 </head>
 
 <body>
 
-<!-- 🔵 HEADER ADDED -->
 <div class="header">
-  <h1>Lado Women Foundation</h1>
+  <h2>Lado Women Foundation</h2>
   <p>Internship Certificate Verification</p>
 </div>
 
 <div class="container">
 
-  <h2 id="studentName">Loading...</h2>
+  <input type="text" id="internshipIdInput" placeholder="Enter Internship ID">
+  <button onclick="verify()">Verify Certificate</button>
 
-  <p><span class="label">Internship ID:</span> <span id="internshipId"></span></p>
-  <p><span class="label">Father Name:</span> <span id="fatherName"></span></p>
-  <p><span class="label">College:</span> <span id="college"></span></p>
-  <p><span class="label">Roll No:</span> <span id="rollNo"></span></p>
-  <p><span class="label">Class:</span> <span id="className"></span></p>
-  <p><span class="label">Semester:</span> <span id="semester"></span></p>
-  <p><span class="label">Duration:</span> <span id="duration"></span></p>
-  <p><span class="label">Certificate No:</span> <span id="certificateNo"></span></p>
-  <p><span class="label">Issue Date:</span> <span id="issueDate"></span></p>
-  <p><span class="label">Status:</span> <span id="status" class="status"></span></p>
+  <div class="result" id="result"></div>
 
 </div>
 
 <script>
+
 const API_URL = "YOUR_API_URL_HERE";
 
-fetch(API_URL)
-.then(res => res.json())
-.then(data => {
+function verify(){
 
-  document.getElementById("studentName").innerText = data.studentName || "Not Found";
-  document.getElementById("internshipId").innerText = data.internshipId || "-";
-  document.getElementById("fatherName").innerText = data.fatherName || "-";
-  document.getElementById("college").innerText = data.college || "-";
-  document.getElementById("rollNo").innerText = data.rollNo || "-";
-  document.getElementById("className").innerText = data.class || "-";
-  document.getElementById("semester").innerText = data.semester || "-";
-  document.getElementById("duration").innerText = data.duration || "-";
-  document.getElementById("certificateNo").innerText = data.certificateNo || "-";
-  document.getElementById("issueDate").innerText = data.issueDate || "-";
-  document.getElementById("status").innerText = data.status || "Invalid";
+  let id = document.getElementById("internshipIdInput").value;
+  let resultDiv = document.getElementById("result");
 
-});
+  if(!id){
+    resultDiv.innerHTML = "Please enter Internship ID";
+    return;
+  }
+
+  fetch(API_URL)
+  .then(res => res.json())
+  .then(data => {
+
+    if(data.internshipId == id){
+
+      resultDiv.innerHTML = `
+        <h3 style="color:green;">Verified ✔️</h3>
+        <p><b>Name:</b> ${data.studentName}</p>
+        <p><b>Internship ID:</b> ${data.internshipId}</p>
+        <p><b>College:</b> ${data.college}</p>
+        <p><b>Certificate No:</b> ${data.certificateNo}</p>
+        <p><b>Issue Date:</b> ${data.issueDate}</p>
+        <p><b>Status:</b> ${data.status}</p>
+      `;
+
+    } else {
+      resultDiv.innerHTML = "<h3 style='color:red;'>Invalid Certificate ❌</h3>";
+    }
+
+  })
+  .catch(err => {
+    resultDiv.innerHTML = "Error loading data";
+  });
+
+}
+
 </script>
 
 </body>
