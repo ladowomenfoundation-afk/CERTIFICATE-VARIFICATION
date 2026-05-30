@@ -1,168 +1,192 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Lado Women Foundation - Verification</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lado Women Foundation - Internship Certificate Verification</title>
 
 <style>
 body{
-  font-family: Arial;
-  margin:0;
-  background:#f4f6f9;
+    font-family: Arial, sans-serif;
+    margin:0;
+    background:#f4f6f9;
 }
 
 .header{
-  background:#0b3d91;
-  color:white;
-  text-align:center;
-  padding:18px;
-}
-
-.header h2{
-  margin:0;
-}
-
-.header p{
-  margin:5px 0 0;
-  font-size:14px;
+    background:#0b3d91;
+    color:#fff;
+    text-align:center;
+    padding:20px;
 }
 
 .container{
-  max-width:750px;
-  margin:40px auto;
-  background:#fff;
-  padding:25px;
-  border-radius:10px;
-  box-shadow:0 0 10px rgba(0,0,0,0.1);
+    max-width:800px;
+    margin:30px auto;
+    background:#fff;
+    padding:25px;
+    border-radius:10px;
+    box-shadow:0 0 10px rgba(0,0,0,0.15);
 }
 
 input{
-  width:100%;
-  padding:12px;
-  margin:8px 0;
-  border:1px solid #ccc;
-  border-radius:6px;
-  font-size:15px;
+    width:100%;
+    padding:12px;
+    border:1px solid #ccc;
+    border-radius:6px;
+    font-size:16px;
+    box-sizing:border-box;
 }
 
 button{
-  width:100%;
-  padding:12px;
-  margin-top:10px;
-  background:#27ae60;
-  color:white;
-  border:none;
-  border-radius:6px;
-  font-size:16px;
-  cursor:pointer;
+    width:100%;
+    padding:12px;
+    margin-top:10px;
+    border:none;
+    border-radius:6px;
+    background:#198754;
+    color:#fff;
+    font-size:16px;
+    cursor:pointer;
 }
 
 button:hover{
-  background:#219150;
+    background:#157347;
 }
 
 .result{
-  margin-top:20px;
-  padding:15px;
-  border-top:1px solid #ddd;
+    margin-top:20px;
 }
 
-.ok{
-  color:green;
-  font-weight:bold;
-  font-size:18px;
+.card{
+    border:1px solid #ddd;
+    border-radius:8px;
+    padding:15px;
+    background:#fafafa;
 }
 
-.bad{
-  color:red;
-  font-weight:bold;
+.success{
+    color:green;
+    font-weight:bold;
 }
 
-.label{
-  font-weight:bold;
+.error{
+    color:red;
+    font-weight:bold;
+}
+
+.row{
+    margin:8px 0;
 }
 </style>
 </head>
-
 <body>
 
 <div class="header">
-  <h2>Lado Women Foundation</h2>
-  <p>Internship Certificate Verification System</p>
+    <h2>Lado Women Foundation</h2>
+    <p>Internship Certificate Verification System</p>
 </div>
 
 <div class="container">
 
-  <input type="text" id="searchInput" placeholder="Search by Name / Internship ID / Certificate ID">
+    <input
+        type="text"
+        id="searchInput"
+        placeholder="Enter Internship ID / Student Name / Certificate ID"
+    >
 
-  <button onclick="verify()">Verify Certificate</button>
+    <button onclick="verifyCertificate()">
+        Verify Certificate
+    </button>
 
-  <div class="result" id="result"></div>
+    <div id="result" class="result"></div>
 
 </div>
 
 <script>
 
-// 🔥 YOUR APPS SCRIPT API
-const API_URL = "https://script.google.com/macros/s/AKfycbzi2xOyd7OXiAEx8ZFeRgdGuKp_cykUrj7n84pujLRgZiO7YdZbZ_StIB04Qn0ecjWvTQ/exec";
+const API_URL =
+"https://script.google.com/macros/s/AKfycbzi2xOyd7OXiAEx8ZFeRgdGuKp_cykUrj7n84pujLRgZiO7YdZbZ_StIB04Qn0ecjWvTQ/exec";
 
-function verify(){
+async function verifyCertificate(){
 
-  let input = document.getElementById("searchInput").value.toLowerCase().trim();
-  let result = document.getElementById("result");
+    const searchValue =
+        document.getElementById("searchInput").value.trim();
 
-  if(!input){
-    result.innerHTML = "<span class='bad'>Please enter value</span>";
-    return;
-  }
+    const result =
+        document.getElementById("result");
 
-  result.innerHTML = "Checking...";
-
-  fetch(API_URL)
-  .then(res => res.json())
-  .then(data => {
-
-    console.log("API DATA:", data);
-
-    // 🔥 SAFE CONVERSION (ARRAY + OBJECT FIX)
-    let list = [];
-
-    if(Array.isArray(data)){
-      list = data;
-    }
-    else if(data.records){
-      list = data.records;
-    }
-    else{
-      list = [data];
+    if(!searchValue){
+        result.innerHTML =
+            "<p class='error'>Please enter a value.</p>";
+        return;
     }
 
-    let match = null;
+    result.innerHTML = "Checking...";
 
-    for(let item of list){
+    try{
 
-      let name = (item.studentName || "").toLowerCase().trim();
-      let iid = (item.internshipId || "").toLowerCase().trim();
-      let cid = (item.certificateNo || "").toLowerCase().trim();
+        const response = await fetch(
+            API_URL +
+            "?search=" +
+            encodeURIComponent(searchValue)
+        );
 
-      if(
-        input === name ||
-        input === iid ||
-        input === cid ||
-        name.includes(input) ||
-        iid.includes(input) ||
-        cid.includes(input)
-      ){
-        match = item;
-        break;
-      }
+        const json = await response.json();
+
+        if(json.status === "found" && json.data){
+
+            const d = json.data;
+
+            result.innerHTML = `
+            <div class="card">
+
+                <h3 class="success">
+                    ✅ Certificate Verified
+                </h3>
+
+                <div class="row"><b>Student Name:</b> ${d.studentName || "-"}</div>
+
+                <div class="row"><b>Internship ID:</b> ${d.internshipId || "-"}</div>
+
+                <div class="row"><b>Father Name:</b> ${d.fatherName || "-"}</div>
+
+                <div class="row"><b>College:</b> ${d.college || "-"}</div>
+
+                <div class="row"><b>Roll No:</b> ${d.rollNo || "-"}</div>
+
+                <div class="row"><b>Class:</b> ${d.class || "-"}</div>
+
+                <div class="row"><b>Semester:</b> ${d.semester || "-"}</div>
+
+                <div class="row"><b>Duration:</b> ${d.duration || "-"}</div>
+
+                <div class="row"><b>Certificate No:</b> ${d.certificateNo || "-"}</div>
+
+                <div class="row"><b>Issue Date:</b> ${d.issueDate || "-"}</div>
+
+                <div class="row"><b>Status:</b> ${d.status || "-"}</div>
+
+            </div>
+            `;
+
+        }else{
+
+            result.innerHTML =
+            "<p class='error'>❌ Record Not Found</p>";
+
+        }
+
+    }catch(error){
+
+        console.error(error);
+
+        result.innerHTML =
+        "<p class='error'>Server Error</p>";
+
     }
 
-    if(match){
+}
+</script>
 
-      result.innerHTML = `
-        <h3 class="ok">✔️ Certificate Verified Successfully</h3>
-
-        <p><span class="label">Name:</span> ${match.studentName || "-"}</p>
-        <p><span class="label">Internship ID:</span> ${match.internshipId || "-"}</p>
-        <p><span class="label">Father Name:</span> ${
+</body>
+</html>
