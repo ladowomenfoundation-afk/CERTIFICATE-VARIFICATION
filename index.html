@@ -1,42 +1,64 @@
-function verify(){
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Certificate Verification</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    #result h3 { margin: 0; }
+    .verified { color: green; }
+    .not-found, .error { color: red; }
+  </style>
+</head>
+<body>
+  <h2>Certificate Verification</h2>
+  <input type="text" id="search" placeholder="Enter Roll No / Certificate No">
+  <button onclick="verify()">Verify</button>
+  <div id="result"></div>
 
-  let value = document.getElementById("search").value;
+  <script>
+    async function verify() {
+      const value = document.getElementById("search").value.trim();
+      const resultBox = document.getElementById("result");
 
-  document.getElementById("result").innerHTML = "Checking...";
+      if (!value) {
+        resultBox.innerHTML = "<h3 class='error'>⚠️ Please enter a search value</h3>";
+        return;
+      }
 
-  fetch("https://script.google.com/macros/s/AKfycbzi2xOyd7OXiAEx8ZFeRgdGuKp_cykUrj7n84pujLRgZiO7YdZbZ_StIB04Qn0ecjWvTQ/exec?search=" + encodeURIComponent(value))
+      resultBox.innerHTML = "Checking...";
 
-  .then(res => res.json())
-  .then(res => {
+      try {
+        const response = await fetch(
+          "https://script.google.com/macros/s/AKfycbzi2xOyd7OXiAEx8ZFeRgdGuKp_cykUrj7n84pujLRgZiO7YdZbZ_StIB04Qn0ecjWvTQ/exec?search=" 
+          + encodeURIComponent(value)
+        );
 
-    console.log("API RESPONSE:", res);
+        const res = await response.json();
+        console.log("API RESPONSE:", res);
 
-    if(res && res.status === "found"){
-
-      let d = res.data;
-
-      document.getElementById("result").innerHTML =
-        "<h3 style='color:green'>✔️ VERIFIED</h3>" +
-        "<div>" +
-        "ID: " + (d.internshipId || "") + "<br>" +
-        "Name: " + (d.studentName || "") + "<br>" +
-        "Father: " + (d.fatherName || "") + "<br>" +
-        "College: " + (d.college || "") + "<br>" +
-        "Roll No: " + (d.rollNo || "") + "<br>" +
-        "Certificate: " + (d.certificateNo || "") + "<br>" +
-        "Status: " + (d.status || "") +
-        "</div>";
-
-    } else {
-      document.getElementById("result").innerHTML =
-        "<h3 style='color:red'>❌ NOT FOUND</h3>";
+        if (res && res.status === "found") {
+          const d = res.data || {};
+          resultBox.innerHTML = `
+            <h3 class="verified">✔️ VERIFIED</h3>
+            <div>
+              <strong>ID:</strong> ${d.internshipId || ""}<br>
+              <strong>Name:</strong> ${d.studentName || ""}<br>
+              <strong>Father:</strong> ${d.fatherName || ""}<br>
+              <strong>College:</strong> ${d.college || ""}<br>
+              <strong>Roll No:</strong> ${d.rollNo || ""}<br>
+              <strong>Certificate:</strong> ${d.certificateNo || ""}<br>
+              <strong>Status:</strong> ${d.status || ""}
+            </div>
+          `;
+        } else {
+          resultBox.innerHTML = "<h3 class='not-found'>❌ NOT FOUND</h3>";
+        }
+      } catch (err) {
+        console.error(err);
+        resultBox.innerHTML = "<h3 class='error'>SERVER ERROR</h3>";
+      }
     }
-
-  })
-  .catch(err => {
-    console.log(err);
-    document.getElementById("result").innerHTML =
-      "<h3 style='color:red'>SERVER ERROR</h3>";
-  });
-
-}
+  </script>
+</body>
+</html>
