@@ -2,125 +2,180 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Certificate Verification Portal</title>
+<title>LWF Verification Portal</title>
 
 <style>
+
 body{
-font-family: Arial;
-background:#f5f5f5;
-text-align:center;
-padding:30px;
+margin:0;
+font-family:Arial;
+background:url("https://images.unsplash.com/photo-1523240795612-9a054b0db644") no-repeat center center fixed;
+background-size:cover;
+}
+
+.overlay{
+background:rgba(0,0,0,0.6);
+min-height:100vh;
+padding:20px;
 }
 
 .box{
-max-width:600px;
+max-width:700px;
 margin:auto;
 background:white;
 padding:20px;
-border-radius:10px;
-box-shadow:0 0 10px #ccc;
+border-radius:15px;
+text-align:center;
+}
+
+.logo{
+width:90px;
 }
 
 input{
 width:90%;
 padding:12px;
 margin:10px 0;
-font-size:16px;
 }
 
 button{
-padding:12px 25px;
+padding:10px 20px;
 background:green;
 color:white;
 border:none;
+margin:5px;
 cursor:pointer;
-font-size:16px;
+border-radius:5px;
 }
 
 #result{
-margin-top:20px;
 text-align:left;
+margin-top:15px;
 }
 
-.success{
-color:green;
-font-weight:bold;
+.gallery{
+margin-top:20px;
+display:grid;
+grid-template-columns:repeat(2,1fr);
+gap:10px;
 }
 
-.error{
-color:red;
-font-weight:bold;
+.gallery img{
+width:100%;
+border-radius:10px;
+height:150px;
+object-fit:cover;
 }
+
+h2,h3{
+margin:5px;
+}
+
 </style>
 
 </head>
 
 <body>
 
+<div class="overlay">
+
 <div class="box">
+
+<img class="logo" src="logo.png">
 
 <h2>Lado Women Foundation</h2>
 <h3>Certificate Verification System</h3>
 
-<input type="text" id="search" placeholder="Enter Internship ID / Certificate No / Name">
+<input id="search" placeholder="Enter ID / Name / Certificate No">
 
 <br>
 
-<button onclick="verify()">Verify Certificate</button>
+<button onclick="verify()">Verify</button>
 
 <div id="result"></div>
+
+<!-- Internship Gallery -->
+<h3>Internship Activities</h3>
+<div class="gallery" id="gallery"></div>
+
+</div>
 
 </div>
 
 <script>
 
-const API_URL = "https://script.google.com/macros/s/AKfycbyCjE9AAdug8OHXLoYucXt5SrPc1Xl0gObtYlDBOqt_ySJAiXU34yc2Q-etjZiPnEK1/exec";
+const API = "https://script.google.com/macros/s/AKfycbyCjE9AAdug8OHXLoYucXt5SrPc1Xl0gObtYlDBOqt_ySJAiXU34yc2Q-etjziPnEK1/exec";
+
+/* 🔥 Google Drive images list (replace with your links) */
+const images = [
+"https://drive.google.com/uc?export=view&id=FILE_ID_1",
+"https://drive.google.com/uc?export=view&id=FILE_ID_2",
+"https://drive.google.com/uc?export=view&id=FILE_ID_3",
+"https://drive.google.com/uc?export=view&id=FILE_ID_4"
+];
+
+/* Load gallery */
+let gallery = document.getElementById("gallery");
+images.forEach(img=>{
+let image = document.createElement("img");
+image.src = img;
+gallery.appendChild(image);
+});
 
 function verify(){
 
-let search = document.getElementById("search").value;
+let search = document.getElementById("search").value.trim();
 
 if(!search){
-document.getElementById("result").innerHTML = "<p class='error'>Please enter value</p>";
+document.getElementById("result").innerHTML="Enter value";
 return;
 }
 
-document.getElementById("result").innerHTML = "Checking...";
+document.getElementById("result").innerHTML="Checking...";
 
-fetch(API_URL + "?search=" + encodeURIComponent(search.trim()))
-.then(res => res.json())
-.then(data => {
+fetch(API + "?search=" + encodeURIComponent(search))
+.then(res=>res.json())
+.then(data=>{
 
-if(data.status === "found"){
+if(data.status=="found"){
 
-document.getElementById("result").innerHTML = `
-<p class="success">✔️ Certificate Verified</p>
+document.getElementById("result").innerHTML=`
 
-<p><b>Internship ID:</b> ${data.internshipId}</p>
+<h3 style="color:green;">✔️ Verified Certificate</h3>
+
 <p><b>Name:</b> ${data.studentName}</p>
-<p><b>Father Name:</b> ${data.fatherName}</p>
-<p><b>College:</b> ${data.college}</p>
-<p><b>Roll No:</b> ${data.rollNo}</p>
-<p><b>Class:</b> ${data.studentClass}</p>
-<p><b>Semester:</b> ${data.semester}</p>
-<p><b>Duration:</b> ${data.duration}</p>
+<p><b>Internship ID:</b> ${data.internshipId}</p>
 <p><b>Certificate No:</b> ${data.certificateNo}</p>
-<p><b>Issue Date:</b> ${data.issueDate}</p>
+<p><b>College:</b> ${data.college}</p>
+<p><b>Duration:</b> ${data.duration}</p>
 <p><b>Status:</b> ${data.verifyStatus}</p>
+
+<button onclick="downloadCertificate()">Download Certificate</button>
+
 `;
 
 }else{
 
-document.getElementById("result").innerHTML =
-"<p class='error'>❌ Not Found</p>";
+document.getElementById("result").innerHTML=
+"<h3 style='color:red;'>❌ Not Found</h3>";
 
 }
 
-})
-.catch(err => {
-document.getElementById("result").innerHTML =
-"<p class='error'>Error connecting to server</p>";
 });
+
+}
+
+/* Download Certificate */
+function downloadCertificate(){
+
+let text = document.getElementById("result").innerText;
+
+let blob = new Blob([text], {type:"text/plain"});
+let a = document.createElement("a");
+
+a.href = URL.createObjectURL(blob);
+a.download = "Certificate.txt";
+a.click();
 
 }
 
