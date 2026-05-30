@@ -1,93 +1,155 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Lado Women Foundation - Verification</title>
+
+<style>
+body{
+  font-family: Arial;
+  margin:0;
+  background:#f4f6f9;
+}
+
+.header{
+  background:#0b3d91;
+  color:white;
+  text-align:center;
+  padding:20px;
+}
+
+.container{
+  max-width:700px;
+  margin:40px auto;
+  background:#fff;
+  padding:25px;
+  border-radius:10px;
+  box-shadow:0 0 10px rgba(0,0,0,0.1);
+}
+
+input{
+  width:100%;
+  padding:12px;
+  margin:8px 0;
+  border:1px solid #ccc;
+  border-radius:6px;
+}
+
+button{
+  width:100%;
+  padding:12px;
+  margin-top:10px;
+  background:#27ae60;
+  color:white;
+  border:none;
+  border-radius:6px;
+  font-size:16px;
+  cursor:pointer;
+}
+
+.result{
+  margin-top:20px;
+  padding:15px;
+  border-top:1px solid #ddd;
+}
+
+.ok{
+  color:green;
+  font-weight:bold;
+}
+
+.bad{
+  color:red;
+  font-weight:bold;
+}
+
+.label{
+  font-weight:bold;
+}
+</style>
+</head>
+
+<body>
+
+<div class="header">
+  <h2>Lado Women Foundation</h2>
+  <p>Internship Certificate Verification System</p>
+</div>
+
+<div class="container">
+
+  <input type="text" id="searchInput" placeholder="Search by Name / Internship ID / Certificate ID">
+
+  <button onclick="verifyData()">Verify Certificate</button>
+
+  <div class="result" id="result"></div>
+
+</div>
+
 <script>
 
-const API_URL = "YOUR_API_URL_HERE";
+// 🔥 YOUR GOOGLE APPS SCRIPT API
+const API_URL = "https://script.google.com/macros/s/AKfycbzi2xOyd7OXiAEx8ZFeRgdGuKp_cykUrj7n84pujLRgZiO7YdZbZ_StIB04Qn0ecjWvTQ/exec";
 
-// ================= SEARCH =================
-function searchVerify(){
+// ================= MAIN VERIFY FUNCTION =================
+function verifyData(){
 
-  let input = document.getElementById("searchInput").value.toLowerCase();
+  let input = document.getElementById("searchInput").value.trim().toLowerCase();
   let result = document.getElementById("result");
 
   if(!input){
-    result.innerHTML = "Please enter value";
+    result.innerHTML = "<span class='bad'>Please enter value</span>";
     return;
   }
+
+  result.innerHTML = "Checking...";
 
   fetch(API_URL)
   .then(res => res.json())
   .then(data => {
 
-    // 🔥 SAFE CHECK (ARRAY OR OBJECT)
+    // 🔥 SAFE ARRAY CHECK
     let list = Array.isArray(data) ? data : [data];
 
-    let match = list.find(item =>
+    // 🔍 SEARCH LOGIC (3 ways)
+    let match = list.find(item => 
       (item.studentName || "").toLowerCase() === input ||
       (item.internshipId || "").toLowerCase() === input ||
       (item.certificateNo || "").toLowerCase() === input
     );
 
-    showResult(match, result);
+    if(match){
+
+      result.innerHTML = `
+        <h3 class="ok">✔️ Certificate Verified Successfully</h3>
+
+        <p><span class="label">Name:</span> ${match.studentName || "-"}</p>
+        <p><span class="label">Internship ID:</span> ${match.internshipId || "-"}</p>
+        <p><span class="label">Father Name:</span> ${match.fatherName || "-"}</p>
+        <p><span class="label">College:</span> ${match.college || "-"}</p>
+        <p><span class="label">Roll No:</span> ${match.rollNo || "-"}</p>
+        <p><span class="label">Class:</span> ${match.class || "-"}</p>
+        <p><span class="label">Semester:</span> ${match.semester || "-"}</p>
+        <p><span class="label">Duration:</span> ${match.duration || "-"}</p>
+        <p><span class="label">Certificate No:</span> ${match.certificateNo || "-"}</p>
+        <p><span class="label">Issue Date:</span> ${match.issueDate || "-"}</p>
+        <p><span class="label">Status:</span> ${match.status || "-"}</p>
+
+      `;
+
+    } else {
+      result.innerHTML = "<h3 class='bad'>❌ Record Not Found</h3>";
+    }
 
   })
   .catch(err => {
     console.log(err);
-    result.innerHTML = "Server Error / API Not Responding";
+    result.innerHTML = "<span class='bad'>Server Error / API Not Working</span>";
   });
-}
 
-// ================= DIRECT VERIFY =================
-function directVerify(){
-
-  let id = document.getElementById("idInput").value.toLowerCase();
-  let result = document.getElementById("result");
-
-  if(!id){
-    result.innerHTML = "Please enter Internship ID";
-    return;
-  }
-
-  fetch(API_URL)
-  .then(res => res.json())
-  .then(data => {
-
-    let list = Array.isArray(data) ? data : [data];
-
-    let match = list.find(item =>
-      (item.internshipId || "").toLowerCase() === id
-    );
-
-    showResult(match, result);
-
-  })
-  .catch(err => {
-    console.log(err);
-    result.innerHTML = "Server Error";
-  });
-}
-
-// ================= RESULT =================
-function showResult(match, result){
-
-  if(!match){
-    result.innerHTML = "<h3 style='color:red;'>❌ Not Found</h3>";
-    return;
-  }
-
-  result.innerHTML = `
-    <h3 style="color:green;">✔️ Verified Successfully</h3>
-
-    <p><b>Name:</b> ${match.studentName || "-"}</p>
-    <p><b>Internship ID:</b> ${match.internshipId || "-"}</p>
-    <p><b>Father Name:</b> ${match.fatherName || "-"}</p>
-    <p><b>College:</b> ${match.college || "-"}</p>
-    <p><b>Roll No:</b> ${match.rollNo || "-"}</p>
-    <p><b>Class:</b> ${match.class || "-"}</p>
-    <p><b>Semester:</b> ${match.semester || "-"}</p>
-    <p><b>Duration:</b> ${match.duration || "-"}</p>
-    <p><b>Certificate No:</b> ${match.certificateNo || "-"}</p>
-    <p><b>Issue Date:</b> ${match.issueDate || "-"}</p>
-    <p><b>Status:</b> ${match.status || "-"}</p>
-  `;
 }
 
 </script>
+
+</body>
+</html>
