@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>LWF Verification Portal</title>
+<title>Lado Women Foundation Verification</title>
 
 <style>
 
@@ -14,38 +14,42 @@ background-size:cover;
 }
 
 .overlay{
-background:rgba(0,0,0,0.6);
+background:rgba(0,0,0,0.65);
 min-height:100vh;
 padding:20px;
 }
 
-.box{
-max-width:700px;
+.container{
+max-width:750px;
 margin:auto;
 background:white;
 padding:20px;
 border-radius:15px;
 text-align:center;
+box-shadow:0 0 15px rgba(0,0,0,0.3);
 }
 
 .logo{
 width:90px;
+margin-bottom:10px;
 }
 
 input{
 width:90%;
 padding:12px;
 margin:10px 0;
+border:1px solid #ccc;
+border-radius:8px;
 }
 
 button{
 padding:10px 20px;
+margin:5px;
 background:green;
 color:white;
 border:none;
-margin:5px;
+border-radius:6px;
 cursor:pointer;
-border-radius:5px;
 }
 
 #result{
@@ -62,9 +66,9 @@ gap:10px;
 
 .gallery img{
 width:100%;
-border-radius:10px;
-height:150px;
+height:160px;
 object-fit:cover;
+border-radius:10px;
 }
 
 h2,h3{
@@ -79,12 +83,13 @@ margin:5px;
 
 <div class="overlay">
 
-<div class="box">
+<div class="container">
 
-<img class="logo" src="logo.png">
+<!-- LOGO (replace FILE_ID) -->
+<img class="logo" src="https://drive.google.com/thumbnail?id=YOUR_LOGO_ID&sz=w300">
 
 <h2>Lado Women Foundation</h2>
-<h3>Certificate Verification System</h3>
+<h3>Certificate Verification Portal</h3>
 
 <input id="search" placeholder="Enter ID / Name / Certificate No">
 
@@ -94,7 +99,6 @@ margin:5px;
 
 <div id="result"></div>
 
-<!-- Internship Gallery -->
 <h3>Internship Activities</h3>
 <div class="gallery" id="gallery"></div>
 
@@ -104,22 +108,24 @@ margin:5px;
 
 <script>
 
+/* 🔥 YOUR FINAL APPS SCRIPT API */
 const API = "https://script.google.com/macros/s/AKfycbyCjE9AAdug8OHXLoYucXt5SrPc1Xl0gObtYlDBOqt_ySJAiXU34yc2Q-etjziPnEK1/exec";
 
-/* 🔥 Google Drive images list (replace with your links) */
+/* 🔥 GOOGLE DRIVE IMAGES (replace FILE_IDs) */
 const images = [
-"https://drive.google.com/uc?export=view&id=FILE_ID_1",
-"https://drive.google.com/uc?export=view&id=FILE_ID_2",
-"https://drive.google.com/uc?export=view&id=FILE_ID_3",
-"https://drive.google.com/uc?export=view&id=FILE_ID_4"
+"https://drive.google.com/thumbnail?id=FILE_ID_1&sz=w1000",
+"https://drive.google.com/thumbnail?id=FILE_ID_2&sz=w1000",
+"https://drive.google.com/thumbnail?id=FILE_ID_3&sz=w1000",
+"https://drive.google.com/thumbnail?id=FILE_ID_4&sz=w1000"
 ];
 
-/* Load gallery */
+/* LOAD GALLERY */
 let gallery = document.getElementById("gallery");
+
 images.forEach(img=>{
-let image = document.createElement("img");
-image.src = img;
-gallery.appendChild(image);
+let im = document.createElement("img");
+im.src = img;
+gallery.appendChild(im);
 });
 
 function verify(){
@@ -145,12 +151,13 @@ document.getElementById("result").innerHTML=`
 
 <p><b>Name:</b> ${data.studentName}</p>
 <p><b>Internship ID:</b> ${data.internshipId}</p>
-<p><b>Certificate No:</b> ${data.certificateNo}</p>
+<p><b>Father:</b> ${data.fatherName}</p>
 <p><b>College:</b> ${data.college}</p>
+<p><b>Certificate No:</b> ${data.certificateNo}</p>
 <p><b>Duration:</b> ${data.duration}</p>
 <p><b>Status:</b> ${data.verifyStatus}</p>
 
-<button onclick="downloadCertificate()">Download Certificate</button>
+<button onclick="downloadCert()">Download Certificate</button>
 
 `;
 
@@ -165,8 +172,8 @@ document.getElementById("result").innerHTML=
 
 }
 
-/* Download Certificate */
-function downloadCertificate(){
+/* DOWNLOAD */
+function downloadCert(){
 
 let text = document.getElementById("result").innerText;
 
@@ -174,7 +181,7 @@ let blob = new Blob([text], {type:"text/plain"});
 let a = document.createElement("a");
 
 a.href = URL.createObjectURL(blob);
-a.download = "Certificate.txt";
+a.download = "LWF_Certificate.txt";
 a.click();
 
 }
