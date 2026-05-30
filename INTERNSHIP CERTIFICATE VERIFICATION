@@ -1,0 +1,57 @@
+function doGet(e) {
+
+  const sheet = SpreadsheetApp
+    .openById("1JuZbUqFTyrnNCplJy6rZyRM7jtDToJCvQ0RIG5l1kvE")
+    .getSheets()[0];
+
+  const data = sheet.getDataRange().getValues();
+
+  const search = String(e.parameter.search || "").toLowerCase().trim();
+
+  for (let i = 1; i < data.length; i++) {
+
+    let row = data[i];
+
+    let internshipId = String(row[0] || "");
+    let studentName = String(row[1] || "");
+    let fatherName = String(row[2] || "");
+    let college = String(row[3] || "");
+    let rollNo = String(row[4] || "");
+    let studentClass = String(row[5] || "");
+    let semester = String(row[6] || "");
+    let duration = String(row[7] || "");
+    let certificateNo = String(row[8] || "");
+    let issueDate = String(row[9] || "");
+    let verifyStatus = String(row[10] || "Verified");
+
+    if (
+      internshipId.toLowerCase().includes(search) ||
+      studentName.toLowerCase().includes(search) ||
+      certificateNo.toLowerCase().includes(search)
+    ) {
+
+      return ContentService
+        .createTextOutput(JSON.stringify({
+          status: "found",
+          internshipId,
+          studentName,
+          fatherName,
+          college,
+          rollNo,
+          studentClass,
+          semester,
+          duration,
+          certificateNo,
+          issueDate,
+          verifyStatus
+        }))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+  }
+
+  return ContentService
+    .createTextOutput(JSON.stringify({
+      status: "notfound"
+    }))
+    .setMimeType(ContentService.MimeType.JSON);
+}
