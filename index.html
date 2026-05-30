@@ -1,113 +1,15 @@
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8">
-<title>Certificate Verification</title>
-
-<style>
-body{
-  font-family: Arial;
-  background:#f4f6f9;
-  margin:0;
-}
-
-.header{
-  background:#0b3d91;
-  color:white;
-  text-align:center;
-  padding:20px;
-}
-
-.container{
-  max-width:700px;
-  margin:40px auto;
-  background:#fff;
-  padding:25px;
-  border-radius:10px;
-  box-shadow:0 0 10px rgba(0,0,0,0.1);
-}
-
-input{
-  width:100%;
-  padding:12px;
-  margin:8px 0;
-  border:1px solid #ccc;
-  border-radius:6px;
-}
-
-button{
-  width:100%;
-  padding:12px;
-  margin-top:10px;
-  background:#27ae60;
-  color:white;
-  border:none;
-  border-radius:6px;
-  font-size:16px;
-  cursor:pointer;
-}
-
-.result{
-  margin-top:20px;
-  padding:15px;
-  border-top:1px solid #ddd;
-}
-
-.ok{
-  color:green;
-  font-weight:bold;
-}
-
-.bad{
-  color:red;
-  font-weight:bold;
-}
-
-.label{
-  font-weight:bold;
-}
-</style>
-</head>
-
-<body>
-
-<!-- HEADER -->
-<div class="header">
-  <h2>Lado Women Foundation</h2>
-  <p>Internship Certificate Verification System</p>
-</div>
-
-<div class="container">
-
-  <!-- 🔍 SEARCH BOX -->
-  <input type="text" id="searchInput" placeholder="Search by Name / Internship ID / Certificate ID">
-
-  <button onclick="searchVerify()">Search & Verify</button>
-
-  <hr>
-
-  <!-- 🔢 DIRECT ID VERIFY -->
-  <input type="text" id="idInput" placeholder="Enter Internship ID (Direct Verify)">
-  <button onclick="directVerify()">Verify by ID</button>
-
-  <div class="result" id="result"></div>
-
-</div>
-
 <script>
 
 const API_URL = "YOUR_API_URL_HERE";
 
-// ===============================
-// 🔍 SEARCH (NAME / ID / CERT NO)
-// ===============================
+// ================= SEARCH =================
 function searchVerify(){
 
   let input = document.getElementById("searchInput").value.toLowerCase();
   let result = document.getElementById("result");
 
   if(!input){
-    result.innerHTML = "Please enter search value";
+    result.innerHTML = "Please enter value";
     return;
   }
 
@@ -115,23 +17,25 @@ function searchVerify(){
   .then(res => res.json())
   .then(data => {
 
-    let match = data.find(item =>
-      item.studentName.toLowerCase() === input ||
-      item.internshipId.toLowerCase() === input ||
-      item.certificateNo.toLowerCase() === input
+    // 🔥 SAFE CHECK (ARRAY OR OBJECT)
+    let list = Array.isArray(data) ? data : [data];
+
+    let match = list.find(item =>
+      (item.studentName || "").toLowerCase() === input ||
+      (item.internshipId || "").toLowerCase() === input ||
+      (item.certificateNo || "").toLowerCase() === input
     );
 
     showResult(match, result);
 
   })
   .catch(err => {
-    result.innerHTML = "Error loading data";
+    console.log(err);
+    result.innerHTML = "Server Error / API Not Responding";
   });
 }
 
-// ===============================
-// 🔢 DIRECT ID VERIFY
-// ===============================
+// ================= DIRECT VERIFY =================
 function directVerify(){
 
   let id = document.getElementById("idInput").value.toLowerCase();
@@ -146,18 +50,44 @@ function directVerify(){
   .then(res => res.json())
   .then(data => {
 
-    let match = data.find(item =>
-      item.internshipId.toLowerCase() === id
+    let list = Array.isArray(data) ? data : [data];
+
+    let match = list.find(item =>
+      (item.internshipId || "").toLowerCase() === id
     );
 
     showResult(match, result);
 
   })
   .catch(err => {
-    result.innerHTML = "Error loading data";
+    console.log(err);
+    result.innerHTML = "Server Error";
   });
 }
 
-// ===============================
-// 📄 DISPLAY FUNCTION
-// =================
+// ================= RESULT =================
+function showResult(match, result){
+
+  if(!match){
+    result.innerHTML = "<h3 style='color:red;'>❌ Not Found</h3>";
+    return;
+  }
+
+  result.innerHTML = `
+    <h3 style="color:green;">✔️ Verified Successfully</h3>
+
+    <p><b>Name:</b> ${match.studentName || "-"}</p>
+    <p><b>Internship ID:</b> ${match.internshipId || "-"}</p>
+    <p><b>Father Name:</b> ${match.fatherName || "-"}</p>
+    <p><b>College:</b> ${match.college || "-"}</p>
+    <p><b>Roll No:</b> ${match.rollNo || "-"}</p>
+    <p><b>Class:</b> ${match.class || "-"}</p>
+    <p><b>Semester:</b> ${match.semester || "-"}</p>
+    <p><b>Duration:</b> ${match.duration || "-"}</p>
+    <p><b>Certificate No:</b> ${match.certificateNo || "-"}</p>
+    <p><b>Issue Date:</b> ${match.issueDate || "-"}</p>
+    <p><b>Status:</b> ${match.status || "-"}</p>
+  `;
+}
+
+</script>
