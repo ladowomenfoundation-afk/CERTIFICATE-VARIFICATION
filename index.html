@@ -19,17 +19,18 @@ body{
 }
 
 .container{
-  max-width:600px;
+  max-width:700px;
   margin:40px auto;
   background:#fff;
-  padding:20px;
+  padding:25px;
   border-radius:10px;
+  box-shadow:0 0 10px rgba(0,0,0,0.1);
 }
 
 input{
   width:100%;
   padding:12px;
-  margin:10px 0;
+  margin:8px 0;
   border:1px solid #ccc;
   border-radius:6px;
 }
@@ -37,18 +38,29 @@ input{
 button{
   width:100%;
   padding:12px;
+  margin-top:10px;
   background:#27ae60;
   color:white;
   border:none;
   border-radius:6px;
-  cursor:pointer;
   font-size:16px;
+  cursor:pointer;
 }
 
 .result{
   margin-top:20px;
   padding:15px;
   border-top:1px solid #ddd;
+}
+
+.ok{
+  color:green;
+  font-weight:bold;
+}
+
+.bad{
+  color:red;
+  font-weight:bold;
 }
 
 .label{
@@ -59,15 +71,24 @@ button{
 
 <body>
 
+<!-- HEADER -->
 <div class="header">
   <h2>Lado Women Foundation</h2>
-  <p>Internship Certificate Verification</p>
+  <p>Internship Certificate Verification System</p>
 </div>
 
 <div class="container">
 
-  <input type="text" id="internshipIdInput" placeholder="Enter Internship ID">
-  <button onclick="verify()">Verify Certificate</button>
+  <!-- 🔍 SEARCH BOX -->
+  <input type="text" id="searchInput" placeholder="Search by Name / Internship ID / Certificate ID">
+
+  <button onclick="searchVerify()">Search & Verify</button>
+
+  <hr>
+
+  <!-- 🔢 DIRECT ID VERIFY -->
+  <input type="text" id="idInput" placeholder="Enter Internship ID (Direct Verify)">
+  <button onclick="directVerify()">Verify by ID</button>
 
   <div class="result" id="result"></div>
 
@@ -77,13 +98,16 @@ button{
 
 const API_URL = "YOUR_API_URL_HERE";
 
-function verify(){
+// ===============================
+// 🔍 SEARCH (NAME / ID / CERT NO)
+// ===============================
+function searchVerify(){
 
-  let id = document.getElementById("internshipIdInput").value;
-  let resultDiv = document.getElementById("result");
+  let input = document.getElementById("searchInput").value.toLowerCase();
+  let result = document.getElementById("result");
 
-  if(!id){
-    resultDiv.innerHTML = "Please enter Internship ID";
+  if(!input){
+    result.innerHTML = "Please enter search value";
     return;
   }
 
@@ -91,30 +115,49 @@ function verify(){
   .then(res => res.json())
   .then(data => {
 
-    if(data.internshipId == id){
+    let match = data.find(item =>
+      item.studentName.toLowerCase() === input ||
+      item.internshipId.toLowerCase() === input ||
+      item.certificateNo.toLowerCase() === input
+    );
 
-      resultDiv.innerHTML = `
-        <h3 style="color:green;">Verified ✔️</h3>
-        <p><b>Name:</b> ${data.studentName}</p>
-        <p><b>Internship ID:</b> ${data.internshipId}</p>
-        <p><b>College:</b> ${data.college}</p>
-        <p><b>Certificate No:</b> ${data.certificateNo}</p>
-        <p><b>Issue Date:</b> ${data.issueDate}</p>
-        <p><b>Status:</b> ${data.status}</p>
-      `;
-
-    } else {
-      resultDiv.innerHTML = "<h3 style='color:red;'>Invalid Certificate ❌</h3>";
-    }
+    showResult(match, result);
 
   })
   .catch(err => {
-    resultDiv.innerHTML = "Error loading data";
+    result.innerHTML = "Error loading data";
   });
-
 }
 
-</script>
+// ===============================
+// 🔢 DIRECT ID VERIFY
+// ===============================
+function directVerify(){
 
-</body>
-</html>
+  let id = document.getElementById("idInput").value.toLowerCase();
+  let result = document.getElementById("result");
+
+  if(!id){
+    result.innerHTML = "Please enter Internship ID";
+    return;
+  }
+
+  fetch(API_URL)
+  .then(res => res.json())
+  .then(data => {
+
+    let match = data.find(item =>
+      item.internshipId.toLowerCase() === id
+    );
+
+    showResult(match, result);
+
+  })
+  .catch(err => {
+    result.innerHTML = "Error loading data";
+  });
+}
+
+// ===============================
+// 📄 DISPLAY FUNCTION
+// =================
