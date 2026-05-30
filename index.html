@@ -1,188 +1,127 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="UTF-8">
-<title>Lado Women Foundation Verification</title>
+  <title>Certificate Verification</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<style>
+  <style>
+    body{
+      font-family: Arial;
+      margin:0;
+      background:#f4f6f8;
+    }
 
-body{
-margin:0;
-font-family:Arial;
-background:url("https://images.unsplash.com/photo-1523240795612-9a054b0db644") no-repeat center center fixed;
-background-size:cover;
-}
+    .header{
+      background:green;
+      color:white;
+      padding:15px;
+      text-align:center;
+      font-size:20px;
+      font-weight:bold;
+    }
 
-.overlay{
-background:rgba(0,0,0,0.65);
-min-height:100vh;
-padding:20px;
-}
+    .box{
+      max-width:600px;
+      margin:auto;
+      padding:20px;
+    }
 
-.container{
-max-width:750px;
-margin:auto;
-background:white;
-padding:20px;
-border-radius:15px;
-text-align:center;
-box-shadow:0 0 15px rgba(0,0,0,0.3);
-}
+    input{
+      width:90%;
+      padding:12px;
+      margin-top:10px;
+      border:1px solid #ccc;
+      border-radius:6px;
+    }
 
-.logo{
-width:90px;
-margin-bottom:10px;
-}
+    button{
+      margin-top:10px;
+      padding:10px 15px;
+      background:green;
+      color:white;
+      border:none;
+      border-radius:6px;
+      cursor:pointer;
+    }
 
-input{
-width:90%;
-padding:12px;
-margin:10px 0;
-border:1px solid #ccc;
-border-radius:8px;
-}
+    #result{
+      margin-top:20px;
+      text-align:left;
+      line-height:1.8;
+    }
 
-button{
-padding:10px 20px;
-margin:5px;
-background:green;
-color:white;
-border:none;
-border-radius:6px;
-cursor:pointer;
-}
+    .ok{color:green;font-weight:bold;font-size:18px;}
+    .bad{color:red;font-weight:bold;font-size:18px;}
 
-#result{
-text-align:left;
-margin-top:15px;
-}
-
-.gallery{
-margin-top:20px;
-display:grid;
-grid-template-columns:repeat(2,1fr);
-gap:10px;
-}
-
-.gallery img{
-width:100%;
-height:160px;
-object-fit:cover;
-border-radius:10px;
-}
-
-h2,h3{
-margin:5px;
-}
-
-</style>
-
+    .card{
+      background:white;
+      padding:15px;
+      margin-top:15px;
+      border-radius:10px;
+      box-shadow:0 0 10px rgba(0,0,0,0.1);
+    }
+  </style>
 </head>
 
 <body>
 
-<div class="overlay">
+<div class="header">Certificate Verification Portal</div>
 
-<div class="container">
+<div class="box">
 
-<!-- LOGO (replace FILE_ID) -->
-<img class="logo" src="https://drive.google.com/thumbnail?id=YOUR_LOGO_ID&sz=w300">
+  <h3>Verify Certificate</h3>
 
-<h2>Lado Women Foundation</h2>
-<h3>Certificate Verification Portal</h3>
+  <input id="search" placeholder="Enter ID / Name / Roll No / Certificate No">
 
-<input id="search" placeholder="Enter ID / Name / Certificate No">
+  <button onclick="verify()">VERIFY</button>
 
-<br>
-
-<button onclick="verify()">Verify</button>
-
-<div id="result"></div>
-
-<h3>Internship Activities</h3>
-<div class="gallery" id="gallery"></div>
-
-</div>
+  <div id="result"></div>
 
 </div>
 
 <script>
 
-/* 🔥 YOUR FINAL APPS SCRIPT API */
-const API = "https://script.google.com/macros/s/AKfycbyCjE9AAdug8OHXLoYucXt5SrPc1Xl0gObtYlDBOqt_ySJAiXU34yc2Q-etjziPnEK1/exec";
-
-/* 🔥 GOOGLE DRIVE IMAGES (replace FILE_IDs) */
-const images = [
-"https://drive.google.com/thumbnail?id=FILE_ID_1&sz=w1000",
-"https://drive.google.com/thumbnail?id=FILE_ID_2&sz=w1000",
-"https://drive.google.com/thumbnail?id=FILE_ID_3&sz=w1000",
-"https://drive.google.com/thumbnail?id=FILE_ID_4&sz=w1000"
-];
-
-/* LOAD GALLERY */
-let gallery = document.getElementById("gallery");
-
-images.forEach(img=>{
-let im = document.createElement("img");
-im.src = img;
-gallery.appendChild(im);
-});
-
 function verify(){
 
-let search = document.getElementById("search").value.trim();
+  let value = document.getElementById("search").value;
 
-if(!search){
-document.getElementById("result").innerHTML="Enter value";
-return;
-}
+  document.getElementById("result").innerHTML = "Checking...";
 
-document.getElementById("result").innerHTML="Checking...";
+  fetch("https://script.google.com/macros/s/AKfycbzi2xOyd7OXiAEx8ZFeRgdGuKp_cykUrj7n84pujLRgZiO7YdZbZ_StIB04Qn0ecjWvTQ/exec?search=" + encodeURIComponent(value))
 
-fetch(API + "?search=" + encodeURIComponent(search))
-.then(res=>res.json())
-.then(data=>{
+  .then(res => res.json())
+  .then(res => {
 
-if(data.status=="found"){
+    if(res.status === "found"){
 
-document.getElementById("result").innerHTML=`
+      let d = res.data;
 
-<h3 style="color:green;">✔️ Verified Certificate</h3>
+      document.getElementById("result").innerHTML =
+        "<div class='ok'>✔️ VERIFIED CERTIFICATE</div>" +
+        "<div class='card'>" +
+        "<b>Internship ID:</b> " + d.internshipId + "<br>" +
+        "<b>Student Name:</b> " + d.studentName + "<br>" +
+        "<b>Father Name:</b> " + d.fatherName + "<br>" +
+        "<b>College:</b> " + d.college + "<br>" +
+        "<b>Roll No:</b> " + d.rollNo + "<br>" +
+        "<b>Class:</b> " + d.class + "<br>" +
+        "<b>Semester:</b> " + d.semester + "<br>" +
+        "<b>Duration:</b> " + d.duration + "<br>" +
+        "<b>Certificate No:</b> " + d.certificateNo + "<br>" +
+        "<b>Issue Date:</b> " + d.issueDate + "<br>" +
+        "<b>Status:</b> " + d.status +
+        "</div>";
 
-<p><b>Name:</b> ${data.studentName}</p>
-<p><b>Internship ID:</b> ${data.internshipId}</p>
-<p><b>Father:</b> ${data.fatherName}</p>
-<p><b>College:</b> ${data.college}</p>
-<p><b>Certificate No:</b> ${data.certificateNo}</p>
-<p><b>Duration:</b> ${data.duration}</p>
-<p><b>Status:</b> ${data.verifyStatus}</p>
+    } else {
+      document.getElementById("result").innerHTML =
+        "<div class='bad'>❌ NOT FOUND</div>";
+    }
 
-<button onclick="downloadCert()">Download Certificate</button>
-
-`;
-
-}else{
-
-document.getElementById("result").innerHTML=
-"<h3 style='color:red;'>❌ Not Found</h3>";
-
-}
-
-});
-
-}
-
-/* DOWNLOAD */
-function downloadCert(){
-
-let text = document.getElementById("result").innerText;
-
-let blob = new Blob([text], {type:"text/plain"});
-let a = document.createElement("a");
-
-a.href = URL.createObjectURL(blob);
-a.download = "LWF_Certificate.txt";
-a.click();
+  })
+  .catch(err => {
+    document.getElementById("result").innerHTML =
+      "<div class='bad'>SERVER ERROR</div>";
+  });
 
 }
 
