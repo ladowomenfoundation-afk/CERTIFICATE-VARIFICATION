@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Certificate Verification</title>
+</head>
+
+<body style="font-family:Arial;text-align:center;padding:30px;">
+
+<h2>Lado Women Foundation</h2>
+<h3>Certificate Verification Portal</h3>
+
+<input id="search" placeholder="Enter ID / Name / Certificate No" style="padding:10px;width:80%;margin:10px;">
+
+<br>
+
+<button onclick="verify()" style="padding:10px 20px;background:green;color:white;">
+Verify
+</button>
+
+<div id="result" style="margin-top:20px;"></div>
+
+<script>
+
+const API = "https://script.google.com/macros/s/AKfycbx_RZFU5lzdhys2x7M00yGBVZOsaJ8qqzH8LkGRadG7bhglsW8VzbBHoXCj3YDVHY7A-w/exec";
+
+function verify(){
+
+let val = document.getElementById("search").value;
+
+fetch(API + "?search=" + encodeURIComponent(val))
+.then(res => res.json())
+.then(data => {
+
+if(data.status=="found"){
+
+document.getElementById("result").innerHTML = `
+<h3 style="color:green;">Verified ✅</h3>
+<p><b>Name:</b> ${data.studentName}</p>
+<p><b>Internship ID:</b> ${data.internshipId}</p>
+<p><b>Certificate No:</b> ${data.certificateNo}</p>
+<p><b>College:</b> ${data.college}</p>
+<p><b>Duration:</b> ${data.duration}</p>
+<p><b>Status:</b> ${data.verifyStatus}</p>
+`;
+
+}else{
+
+document.getElementById("result").innerHTML =
+"<h3 style='color:red'>Not Found ❌</h3>";
+
+}
+
+});
+
+}
+
+</script>
+
+</body>
+</html>
