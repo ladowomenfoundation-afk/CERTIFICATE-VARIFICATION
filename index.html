@@ -15,11 +15,21 @@ body{
   background:#0b3d91;
   color:white;
   text-align:center;
-  padding:20px;
+  padding:18px;
+}
+
+.header h2{
+  margin:0;
+}
+
+.header p{
+  margin:5px 0 0;
+  font-size:14px;
+  opacity:0.9;
 }
 
 .container{
-  max-width:700px;
+  max-width:720px;
   margin:40px auto;
   background:#fff;
   padding:25px;
@@ -33,6 +43,7 @@ input{
   margin:8px 0;
   border:1px solid #ccc;
   border-radius:6px;
+  font-size:15px;
 }
 
 button{
@@ -47,6 +58,10 @@ button{
   cursor:pointer;
 }
 
+button:hover{
+  background:#219150;
+}
+
 .result{
   margin-top:20px;
   padding:15px;
@@ -56,6 +71,7 @@ button{
 .ok{
   color:green;
   font-weight:bold;
+  font-size:18px;
 }
 
 .bad{
@@ -80,7 +96,7 @@ button{
 
   <input type="text" id="searchInput" placeholder="Search by Name / Internship ID / Certificate ID">
 
-  <button onclick="verifyData()">Verify Certificate</button>
+  <button onclick="verify()">Verify Certificate</button>
 
   <div class="result" id="result"></div>
 
@@ -88,13 +104,12 @@ button{
 
 <script>
 
-// 🔥 YOUR GOOGLE APPS SCRIPT API
+// 🔥 YOUR APPS SCRIPT URL
 const API_URL = "https://script.google.com/macros/s/AKfycbzi2xOyd7OXiAEx8ZFeRgdGuKp_cykUrj7n84pujLRgZiO7YdZbZ_StIB04Qn0ecjWvTQ/exec";
 
-// ================= MAIN VERIFY FUNCTION =================
-function verifyData(){
+function verify(){
 
-  let input = document.getElementById("searchInput").value.trim().toLowerCase();
+  let input = document.getElementById("searchInput").value.toLowerCase().trim();
   let result = document.getElementById("result");
 
   if(!input){
@@ -108,48 +123,22 @@ function verifyData(){
   .then(res => res.json())
   .then(data => {
 
-    // 🔥 SAFE ARRAY CHECK
-    let list = Array.isArray(data) ? data : [data];
+    // 🔥 SAFE ARRAY HANDLING
+    let list = Array.isArray(data) ? data : (data.records || [data]);
 
-    // 🔍 SEARCH LOGIC (3 ways)
+    // 🔍 SMART SEARCH (partial match fix)
     let match = list.find(item => 
-      (item.studentName || "").toLowerCase() === input ||
-      (item.internshipId || "").toLowerCase() === input ||
-      (item.certificateNo || "").toLowerCase() === input
+      (item.studentName || "").toLowerCase().includes(input) ||
+      (item.internshipId || "").toLowerCase().includes(input) ||
+      (item.certificateNo || "").toLowerCase().includes(input)
     );
 
     if(match){
 
       result.innerHTML = `
-        <h3 class="ok">✔️ Certificate Verified Successfully</h3>
+        <h3 class="ok">✔️ Certificate Verified</h3>
 
         <p><span class="label">Name:</span> ${match.studentName || "-"}</p>
         <p><span class="label">Internship ID:</span> ${match.internshipId || "-"}</p>
         <p><span class="label">Father Name:</span> ${match.fatherName || "-"}</p>
         <p><span class="label">College:</span> ${match.college || "-"}</p>
-        <p><span class="label">Roll No:</span> ${match.rollNo || "-"}</p>
-        <p><span class="label">Class:</span> ${match.class || "-"}</p>
-        <p><span class="label">Semester:</span> ${match.semester || "-"}</p>
-        <p><span class="label">Duration:</span> ${match.duration || "-"}</p>
-        <p><span class="label">Certificate No:</span> ${match.certificateNo || "-"}</p>
-        <p><span class="label">Issue Date:</span> ${match.issueDate || "-"}</p>
-        <p><span class="label">Status:</span> ${match.status || "-"}</p>
-
-      `;
-
-    } else {
-      result.innerHTML = "<h3 class='bad'>❌ Record Not Found</h3>";
-    }
-
-  })
-  .catch(err => {
-    console.log(err);
-    result.innerHTML = "<span class='bad'>Server Error / API Not Working</span>";
-  });
-
-}
-
-</script>
-
-</body>
-</html>
