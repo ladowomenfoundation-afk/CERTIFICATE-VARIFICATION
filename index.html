@@ -3,16 +3,15 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Lado Women Foundation - Internship Verification</title>
+<title>Internship Verification</title>
 
 <style>
 body{
     margin:0;
-    font-family: Arial, sans-serif;
+    font-family: Arial;
     background:#f4f6f9;
 }
 
-/* HEADER */
 .header{
     background:#0b3d91;
     color:white;
@@ -20,76 +19,44 @@ body{
     padding:25px;
 }
 
-.header h1{
-    margin:0;
-    font-size:26px;
-}
-
-.header p{
-    margin:5px 0 0;
-    opacity:0.9;
-    font-size:14px;
-}
-
-/* CONTAINER */
 .container{
     max-width:850px;
     margin:40px auto;
     background:white;
     padding:25px;
     border-radius:12px;
-    box-shadow:0 5px 15px rgba(0,0,0,0.1);
 }
 
-/* INPUT */
 input{
     width:100%;
     padding:12px;
     border:1px solid #ccc;
     border-radius:6px;
-    font-size:15px;
 }
 
-/* BUTTON */
 button{
     width:100%;
     padding:12px;
     margin-top:10px;
+    background:green;
+    color:white;
     border:none;
     border-radius:6px;
-    background:#198754;
-    color:white;
-    font-size:16px;
-    cursor:pointer;
 }
 
-button:hover{
-    background:#157347;
-}
-
-/* RESULT CARD */
 .card{
     margin-top:20px;
     padding:20px;
-    border-radius:10px;
-    background:#fafafa;
     border:1px solid #ddd;
+    border-radius:10px;
 }
 
 .row{
-    margin:8px 0;
-    font-size:14px;
+    margin:6px 0;
 }
 
-.success{
-    color:green;
-    font-weight:bold;
-}
-
-.error{
-    color:red;
-    font-weight:bold;
-}
+.success{color:green;font-weight:bold;}
+.error{color:red;font-weight:bold;}
 
 .badge{
     padding:4px 8px;
@@ -98,27 +65,23 @@ button:hover{
     font-size:12px;
 }
 
-.green{ background:green; }
-.red{ background:red; }
-
+.green{background:green;}
 </style>
 </head>
 
 <body>
 
 <div class="header">
-    <h1>Lado Women Foundation</h1>
-    <p>Internship Certificate Verification Portal</p>
+    <h2>Lado Women Foundation</h2>
+    <p>Internship Verification Portal</p>
 </div>
 
 <div class="container">
 
-    <input type="text" id="search"
-        placeholder="Enter Internship ID / Name / Certificate No">
+<input type="text" id="search" placeholder="Enter ID / Name / Certificate No">
+<button onclick="verify()">Verify</button>
 
-    <button onclick="verify()">Verify Certificate</button>
-
-    <div id="result"></div>
+<div id="result"></div>
 
 </div>
 
@@ -126,8 +89,8 @@ button:hover{
 
 const API_URL = "https://script.google.com/macros/s/AKfycbzi2xOyd7OXiAEx8ZFeRgdGuKp_cykUrj7n84pujLRgZiO7YdZbZ_StIB04Qn0ecjWvTQ/exec";
 
-function clean(val){
-    return val ? val : "-";
+function safe(v){
+    return (v === null || v === undefined || v === "") ? "-" : v;
 }
 
 async function verify(){
@@ -136,53 +99,54 @@ async function verify(){
     let result = document.getElementById("result");
 
     if(!search){
-        result.innerHTML = "<p class='error'>Enter value first</p>";
+        result.innerHTML = "<p class='error'>Enter value</p>";
         return;
     }
 
-    result.innerHTML = "<p>Checking...</p>";
+    result.innerHTML = "Checking...";
 
     try{
 
         const res = await fetch(API_URL + "?search=" + encodeURIComponent(search));
-        const data = await res.json();
+        const json = await res.json();
 
-        if(data.status === "found"){
+        // 🔥 FIX: both conditions supported
+        if(json.status === "found" && json.data){
 
-            let d = data.data;
+            let d = json.data;
 
             result.innerHTML = `
             <div class="card">
 
-                <p class="success">✅ Certificate Verified</p>
+                <div class="success">✅ Certificate Verified</div>
 
-                <div class="row"><b>Student:</b> ${clean(d.studentName)}</div>
-                <div class="row"><b>Internship ID:</b> ${clean(d.internshipId)}</div>
-                <div class="row"><b>Father:</b> ${clean(d.fatherName)}</div>
-                <div class="row"><b>College:</b> ${clean(d.college)}</div>
-                <div class="row"><b>Roll No:</b> ${clean(d.rollNo)}</div>
-                <div class="row"><b>Class:</b> ${clean(d.class)}</div>
-                <div class="row"><b>Semester:</b> ${clean(d.semester)}</div>
-                <div class="row"><b>Duration:</b> ${clean(d.duration)}</div>
-                <div class="row"><b>Certificate No:</b> ${clean(d.certificateNo)}</div>
-                <div class="row"><b>Issue Date:</b> ${clean(d.issueDate)}</div>
+                <div class="row"><b>Student Name:</b> ${safe(d["Student Name"])}</div>
+                <div class="row"><b>Internship ID:</b> ${safe(d["Internship ID"])}</div>
+                <div class="row"><b>Father Name:</b> ${safe(d["Father Name"])}</div>
+                <div class="row"><b>College:</b> ${safe(d["College"])}</div>
+                <div class="row"><b>Roll No:</b> ${safe(d["Roll No"])}</div>
+                <div class="row"><b>Class:</b> ${safe(d["Class"])}</div>
+                <div class="row"><b>Semester:</b> ${safe(d["Semester"])}</div>
+                <div class="row"><b>Duration:</b> ${safe(d["Duration"])}</div>
+                <div class="row"><b>Certificate No:</b> ${safe(d["Certificate No"])}</div>
+                <div class="row"><b>Issue Date:</b> ${safe(d["Issue Date"])}</div>
 
                 <div class="row">
                     <b>Status:</b>
-                    <span class="badge green">${clean(d.status)}</span>
+                    <span class="badge green">${safe(d["Status"])}</span>
                 </div>
 
-                <div class="row"><b>Organisation:</b> ${clean(d.organisationName)}</div>
+                <div class="row"><b>Organisation:</b> ${safe(d["Organisation"])}</div>
 
             </div>
             `;
 
         } else {
-            result.innerHTML = "<p class='error'>❌ Record Not Found</p>";
+            result.innerHTML = "<p class='error'>❌ Not Found</p>";
         }
 
-    } catch(err){
-        console.log(err);
+    } catch(e){
+        console.log(e);
         result.innerHTML = "<p class='error'>Server Error</p>";
     }
 }
