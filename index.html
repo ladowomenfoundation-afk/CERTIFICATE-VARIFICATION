@@ -6,73 +6,16 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
-body{
-    margin:0;
-    font-family:Arial;
-    background:#f4f6f9;
-}
-
-.header{
-    background:#0b3d91;
-    color:white;
-    padding:25px;
-    text-align:center;
-}
-
-.container{
-    max-width:800px;
-    margin:30px auto;
-    background:white;
-    padding:20px;
-    border-radius:10px;
-}
-
-input{
-    width:100%;
-    padding:12px;
-    border:1px solid #ccc;
-    border-radius:6px;
-    font-size:16px;
-}
-
-button{
-    width:100%;
-    padding:12px;
-    margin-top:10px;
-    background:#198754;
-    color:white;
-    border:none;
-    border-radius:6px;
-    cursor:pointer;
-}
-
-button:hover{
-    background:#157347;
-}
-
-.card{
-    margin-top:20px;
-    padding:15px;
-    border:1px solid #ddd;
-    border-radius:8px;
-    background:#fafafa;
-}
-
-.row{
-    margin:6px 0;
-}
-
+body{margin:0;font-family:Arial;background:#f4f6f9;}
+.header{background:#0b3d91;color:white;padding:25px;text-align:center;}
+.container{max-width:800px;margin:30px auto;background:white;padding:20px;border-radius:10px;}
+input{width:100%;padding:12px;border:1px solid #ccc;border-radius:6px;}
+button{width:100%;padding:12px;margin-top:10px;background:#198754;color:white;border:none;border-radius:6px;cursor:pointer;}
+.card{margin-top:20px;padding:15px;border:1px solid #ddd;border-radius:8px;background:#fafafa;}
+.row{margin:6px 0;}
 .success{color:green;font-weight:bold;}
 .error{color:red;font-weight:bold;}
-
-.badge{
-    padding:4px 8px;
-    border-radius:4px;
-    color:white;
-    font-size:12px;
-}
-
-.green{background:green;}
+.badge{padding:4px 8px;border-radius:4px;color:white;font-size:12px;background:green;}
 </style>
 </head>
 
@@ -96,8 +39,8 @@ button:hover{
 
 const API_URL = "https://script.google.com/macros/s/AKfycbzi2xOyd7OXiAEx8ZFeRgdGuKp_cykUrj7n84pujLRgZiO7YdZbZ_StIB04Qn0ecjWvTQ/exec";
 
-function clean(v){
-    return (v ?? "-");
+function safe(v){
+    return (v === null || v === undefined || v === "") ? "-" : v;
 }
 
 async function verify(){
@@ -110,14 +53,14 @@ async function verify(){
         return;
     }
 
-    result.innerHTML = "<p>Checking...</p>";
+    result.innerHTML = "Checking...";
 
     try{
 
         const res = await fetch(API_URL + "?search=" + encodeURIComponent(search));
         const json = await res.json();
 
-        console.log(json); // DEBUG (important)
+        console.log(json);
 
         if(json.verified && json.data){
 
@@ -128,23 +71,19 @@ async function verify(){
 
                 <div class="success">✅ VERIFIED</div>
 
-                <div class="row"><b>Student Name:</b> ${clean(d["Student Name"])}</div>
-                <div class="row"><b>Internship ID:</b> ${clean(d["Internship ID"])}</div>
-                <div class="row"><b>Father Name:</b> ${clean(d["Father Name"])}</div>
-                <div class="row"><b>College:</b> ${clean(d["College"])}</div>
-                <div class="row"><b>Roll No:</b> ${clean(d["Roll No"])}</div>
-                <div class="row"><b>Class:</b> ${clean(d["Class"])}</div>
-                <div class="row"><b>Semester:</b> ${clean(d["Semester"])}</div>
-                <div class="row"><b>Duration:</b> ${clean(d["Duration"])}</div>
-                <div class="row"><b>Certificate No:</b> ${clean(d["Certificate No"])}</div>
-                <div class="row"><b>Issue Date:</b> ${clean(d["Issue Date"])}</div>
+                <div class="row"><b>Student Name:</b> ${safe(d.studentName)}</div>
+                <div class="row"><b>Internship ID:</b> ${safe(d.internshipId)}</div>
+                <div class="row"><b>Father Name:</b> ${safe(d.fatherName)}</div>
+                <div class="row"><b>College:</b> ${safe(d.college)}</div>
+                <div class="row"><b>Roll No:</b> ${safe(d.rollNo)}</div>
+                <div class="row"><b>Class:</b> ${safe(d.class)}</div>
+                <div class="row"><b>Semester:</b> ${safe(d.semester)}</div>
+                <div class="row"><b>Duration:</b> ${safe(d.duration)}</div>
+                <div class="row"><b>Certificate No:</b> ${safe(d.certificateNo)}</div>
+                <div class="row"><b>Issue Date:</b> ${safe(d.issueDate)}</div>
 
-                <div class="row">
-                    <b>Status:</b>
-                    <span class="badge green">${clean(d["Status"])}</span>
-                </div>
-
-                <div class="row"><b>Organisation:</b> ${clean(d["Organisation"])}</div>
+                <div class="row"><b>Status:</b> ${safe(d.status)}</div>
+                <div class="row"><b>Organisation:</b> ${safe(d.organisationName)}</div>
 
             </div>
             `;
