@@ -3,40 +3,54 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Lado Women Foundation - Certificate Verification</title>
+<title>Lado Women Foundation - Internship Verification</title>
 
 <style>
 body{
-    font-family: Arial, sans-serif;
     margin:0;
+    font-family: Arial, sans-serif;
     background:#f4f6f9;
 }
 
+/* HEADER */
 .header{
     background:#0b3d91;
-    color:#fff;
+    color:white;
     text-align:center;
-    padding:20px;
-}
-
-.container{
-    max-width:800px;
-    margin:30px auto;
-    background:#fff;
     padding:25px;
-    border-radius:10px;
-    box-shadow:0 0 10px rgba(0,0,0,0.15);
 }
 
+.header h1{
+    margin:0;
+    font-size:26px;
+}
+
+.header p{
+    margin:5px 0 0;
+    opacity:0.9;
+    font-size:14px;
+}
+
+/* CONTAINER */
+.container{
+    max-width:850px;
+    margin:40px auto;
+    background:white;
+    padding:25px;
+    border-radius:12px;
+    box-shadow:0 5px 15px rgba(0,0,0,0.1);
+}
+
+/* INPUT */
 input{
     width:100%;
     padding:12px;
     border:1px solid #ccc;
     border-radius:6px;
-    font-size:16px;
-    box-sizing:border-box;
+    font-size:15px;
 }
 
+/* BUTTON */
 button{
     width:100%;
     padding:12px;
@@ -44,7 +58,7 @@ button{
     border:none;
     border-radius:6px;
     background:#198754;
-    color:#fff;
+    color:white;
     font-size:16px;
     cursor:pointer;
 }
@@ -53,33 +67,39 @@ button:hover{
     background:#157347;
 }
 
-.result{
-    margin-top:20px;
-}
-
+/* RESULT CARD */
 .card{
-    border:1px solid #ddd;
-    border-radius:8px;
-    padding:15px;
+    margin-top:20px;
+    padding:20px;
+    border-radius:10px;
     background:#fafafa;
+    border:1px solid #ddd;
 }
-
-.success{ color:green; font-weight:bold; }
-.error{ color:red; font-weight:bold; }
 
 .row{
     margin:8px 0;
+    font-size:14px;
+}
+
+.success{
+    color:green;
+    font-weight:bold;
+}
+
+.error{
+    color:red;
+    font-weight:bold;
 }
 
 .badge{
     padding:4px 8px;
-    border-radius:4px;
-    color:#fff;
+    border-radius:5px;
+    color:white;
     font-size:12px;
 }
 
-.verified{ background:green; }
-.unverified{ background:red; }
+.green{ background:green; }
+.red{ background:red; }
 
 </style>
 </head>
@@ -87,115 +107,83 @@ button:hover{
 <body>
 
 <div class="header">
-    <h2>Lado Women Foundation</h2>
-    <p>Certificate Verification System</p>
+    <h1>Lado Women Foundation</h1>
+    <p>Internship Certificate Verification Portal</p>
 </div>
 
 <div class="container">
 
-    <input type="text" id="searchInput"
+    <input type="text" id="search"
         placeholder="Enter Internship ID / Name / Certificate No">
 
-    <button onclick="verifyCertificate()">Verify Certificate</button>
+    <button onclick="verify()">Verify Certificate</button>
 
-    <div id="result" class="result"></div>
+    <div id="result"></div>
 
 </div>
 
 <script>
 
-const API_URL =
-"https://script.google.com/macros/s/AKfycbzi2xOyd7OXiAEx8ZFeRgdGuKp_cykUrj7n84pujLRgZiO7YdZbZ_StIB04Qn0ecjWvTQ/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbzi2xOyd7OXiAEx8ZFeRgdGuKp_cykUrj7n84pujLRgZiO7YdZbZ_StIB04Qn0ecjWvTQ/exec";
 
-// =========================
-// 🔥 SAFE CLEAN FUNCTION
-// =========================
 function clean(val){
-    if(val === null || val === undefined || val === ""){
-        return "-";
-    }
-    return String(val);
+    return val ? val : "-";
 }
 
-// =========================
-// 🔥 VERIFY FUNCTION
-// =========================
-async function verifyCertificate(){
+async function verify(){
 
-    const searchValue =
-        document.getElementById("searchInput").value.trim();
+    let search = document.getElementById("search").value.trim();
+    let result = document.getElementById("result");
 
-    const result =
-        document.getElementById("result");
-
-    if(!searchValue){
-        result.innerHTML =
-        "<p class='error'>Please enter a value</p>";
+    if(!search){
+        result.innerHTML = "<p class='error'>Enter value first</p>";
         return;
     }
 
-    result.innerHTML = "<p>🔄 Verifying...</p>";
+    result.innerHTML = "<p>Checking...</p>";
 
     try{
 
-        const response = await fetch(
-            API_URL + "?search=" +
-            encodeURIComponent(searchValue)
-        );
+        const res = await fetch(API_URL + "?search=" + encodeURIComponent(search));
+        const data = await res.json();
 
-        const json = await response.json();
+        if(data.status === "found"){
 
-        // =========================
-        // 🔥 SAFE VALIDATION
-        // =========================
-        if(json.status === "found" && json.data){
-
-            const d = json.data;
-
-            const statusText = clean(d.status);
-            const badgeClass =
-                statusText.toLowerCase().includes("un")
-                ? "unverified"
-                : "verified";
-
-            const org = clean(d.organisationName || "ILADO WOMEN FOUNDATION");
+            let d = data.data;
 
             result.innerHTML = `
             <div class="card">
 
-                <h3 class="success">✅ Certificate Verified</h3>
+                <p class="success">✅ Certificate Verified</p>
 
-                <div class="row"><b>Student Name:</b> ${clean(d.studentName)}</div>
+                <div class="row"><b>Student:</b> ${clean(d.studentName)}</div>
                 <div class="row"><b>Internship ID:</b> ${clean(d.internshipId)}</div>
-                <div class="row"><b>Father Name:</b> ${clean(d.fatherName)}</div>
+                <div class="row"><b>Father:</b> ${clean(d.fatherName)}</div>
                 <div class="row"><b>College:</b> ${clean(d.college)}</div>
-                <div class="row"><b>Certificate No:</b> ${clean(d.certificateNo)}</div>
+                <div class="row"><b>Roll No:</b> ${clean(d.rollNo)}</div>
+                <div class="row"><b>Class:</b> ${clean(d.class)}</div>
+                <div class="row"><b>Semester:</b> ${clean(d.semester)}</div>
                 <div class="row"><b>Duration:</b> ${clean(d.duration)}</div>
+                <div class="row"><b>Certificate No:</b> ${clean(d.certificateNo)}</div>
+                <div class="row"><b>Issue Date:</b> ${clean(d.issueDate)}</div>
 
                 <div class="row">
                     <b>Status:</b>
-                    <span class="badge ${badgeClass}">
-                        ${statusText}
-                    </span>
+                    <span class="badge green">${clean(d.status)}</span>
                 </div>
 
-                <div class="row"><b>Organisation:</b> ${org}</div>
+                <div class="row"><b>Organisation:</b> ${clean(d.organisationName)}</div>
 
             </div>
             `;
 
-        }else{
-
-            result.innerHTML =
-            "<p class='error'>❌ Record Not Found</p>";
+        } else {
+            result.innerHTML = "<p class='error'>❌ Record Not Found</p>";
         }
 
-    }catch(err){
-
-        console.error(err);
-
-        result.innerHTML =
-        "<p class='error'>Server Error - Try Again</p>";
+    } catch(err){
+        console.log(err);
+        result.innerHTML = "<p class='error'>Server Error</p>";
     }
 }
 
