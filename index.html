@@ -46,10 +46,6 @@ button{
     cursor:pointer;
 }
 
-button:hover{
-    background:#157347;
-}
-
 .card{
     margin-top:20px;
     padding:15px;
@@ -58,9 +54,7 @@ button:hover{
     background:#fafafa;
 }
 
-.row{
-    margin:6px 0;
-}
+.row{ margin:6px 0; }
 
 .success{color:green;font-weight:bold;}
 .error{color:red;font-weight:bold;}
@@ -70,16 +64,15 @@ button:hover{
     border-radius:4px;
     color:white;
     font-size:12px;
+    background:green;
 }
-
-.green{background:green;}
 </style>
 </head>
 
 <body>
 
 <div class="header">
-    <h2>Internship Certificate Verification</h2>
+    <h2>Internship Verification Portal</h2>
     <p>Lado Women Foundation</p>
 </div>
 
@@ -96,8 +89,9 @@ button:hover{
 
 const API_URL = "https://script.google.com/macros/s/AKfycbzi2xOyd7OXiAEx8ZFeRgdGuKp_cykUrj7n84pujLRgZiO7YdZbZ_StIB04Qn0ecjWvTQ/exec";
 
-function clean(v){
-    return (v ?? "-");
+// SAFE GET FUNCTION (MOST IMPORTANT FIX)
+function getVal(obj, key){
+    return (obj && obj[key]) ? obj[key] : "-";
 }
 
 async function verify(){
@@ -110,41 +104,36 @@ async function verify(){
         return;
     }
 
-    result.innerHTML = "<p>Checking...</p>";
+    result.innerHTML = "Checking...";
 
     try{
 
         const res = await fetch(API_URL + "?search=" + encodeURIComponent(search));
         const json = await res.json();
 
-        console.log(json); // DEBUG (important)
+        console.log(json);
 
-        if(json.verified && json.data){
+        if(json.verified === true && json.data){
 
-            const d = json.data;
+            let d = json.data;
 
             result.innerHTML = `
             <div class="card">
 
                 <div class="success">✅ VERIFIED</div>
 
-                <div class="row"><b>Student Name:</b> ${clean(d["Student Name"])}</div>
-                <div class="row"><b>Internship ID:</b> ${clean(d["Internship ID"])}</div>
-                <div class="row"><b>Father Name:</b> ${clean(d["Father Name"])}</div>
-                <div class="row"><b>College:</b> ${clean(d["College"])}</div>
-                <div class="row"><b>Roll No:</b> ${clean(d["Roll No"])}</div>
-                <div class="row"><b>Class:</b> ${clean(d["Class"])}</div>
-                <div class="row"><b>Semester:</b> ${clean(d["Semester"])}</div>
-                <div class="row"><b>Duration:</b> ${clean(d["Duration"])}</div>
-                <div class="row"><b>Certificate No:</b> ${clean(d["Certificate No"])}</div>
-                <div class="row"><b>Issue Date:</b> ${clean(d["Issue Date"])}</div>
-
-                <div class="row">
-                    <b>Status:</b>
-                    <span class="badge green">${clean(d["Status"])}</span>
-                </div>
-
-                <div class="row"><b>Organisation:</b> ${clean(d["Organisation"])}</div>
+                <div class="row"><b>Student Name:</b> ${getVal(d,"Student Name")}</div>
+                <div class="row"><b>Internship ID:</b> ${getVal(d,"Internship ID")}</div>
+                <div class="row"><b>Father Name:</b> ${getVal(d,"Father Name")}</div>
+                <div class="row"><b>College:</b> ${getVal(d,"College")}</div>
+                <div class="row"><b>Roll No:</b> ${getVal(d,"Roll No")}</div>
+                <div class="row"><b>Class:</b> ${getVal(d,"Class")}</div>
+                <div class="row"><b>Semester:</b> ${getVal(d,"Semester")}</div>
+                <div class="row"><b>Duration:</b> ${getVal(d,"Duration")}</div>
+                <div class="row"><b>Certificate No:</b> ${getVal(d,"Certificate No")}</div>
+                <div class="row"><b>Issue Date:</b> ${getVal(d,"Issue Date")}</div>
+                <div class="row"><b>Status:</b> ${getVal(d,"Status")}</div>
+                <div class="row"><b>Organisation:</b> ${getVal(d,"Organisation")}</div>
 
             </div>
             `;
@@ -153,7 +142,7 @@ async function verify(){
             result.innerHTML = "<p class='error'>❌ Record Not Found</p>";
         }
 
-    } catch(err){
+    }catch(err){
         console.log(err);
         result.innerHTML = "<p class='error'>Server Error</p>";
     }
