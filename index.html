@@ -88,7 +88,7 @@ button:hover{
 
 <div class="header">
     <h2>Lado Women Foundation</h2>
-    <p>Internship Certificate Verification System</p>
+    <p>Certificate Verification System</p>
 </div>
 
 <div class="container">
@@ -107,11 +107,19 @@ button:hover{
 const API_URL =
 "https://script.google.com/macros/s/AKfycbzi2xOyd7OXiAEx8ZFeRgdGuKp_cykUrj7n84pujLRgZiO7YdZbZ_StIB04Qn0ecjWvTQ/exec";
 
-// 🔥 simple sanitizer
-function clean(str){
-    return (str || "-").toString();
+// =========================
+// 🔥 SAFE CLEAN FUNCTION
+// =========================
+function clean(val){
+    if(val === null || val === undefined || val === ""){
+        return "-";
+    }
+    return String(val);
 }
 
+// =========================
+// 🔥 VERIFY FUNCTION
+// =========================
 async function verifyCertificate(){
 
     const searchValue =
@@ -126,8 +134,7 @@ async function verifyCertificate(){
         return;
     }
 
-    result.innerHTML =
-        "<p>🔄 Verifying...</p>";
+    result.innerHTML = "<p>🔄 Verifying...</p>";
 
     try{
 
@@ -138,14 +145,20 @@ async function verifyCertificate(){
 
         const json = await response.json();
 
+        // =========================
+        // 🔥 SAFE VALIDATION
+        // =========================
         if(json.status === "found" && json.data){
 
             const d = json.data;
 
+            const statusText = clean(d.status);
             const badgeClass =
-                d.status && d.status.toLowerCase().includes("un")
+                statusText.toLowerCase().includes("un")
                 ? "unverified"
                 : "verified";
+
+            const org = clean(d.organisationName || "ILADO WOMEN FOUNDATION");
 
             result.innerHTML = `
             <div class="card">
@@ -153,33 +166,20 @@ async function verifyCertificate(){
                 <h3 class="success">✅ Certificate Verified</h3>
 
                 <div class="row"><b>Student Name:</b> ${clean(d.studentName)}</div>
-
                 <div class="row"><b>Internship ID:</b> ${clean(d.internshipId)}</div>
-
                 <div class="row"><b>Father Name:</b> ${clean(d.fatherName)}</div>
-
                 <div class="row"><b>College:</b> ${clean(d.college)}</div>
-
-                <div class="row"><b>Roll No:</b> ${clean(d.rollNo)}</div>
-
-                <div class="row"><b>Class:</b> ${clean(d.class)}</div>
-
-                <div class="row"><b>Semester:</b> ${clean(d.semester)}</div>
-
-                <div class="row"><b>Duration:</b> ${clean(d.duration)}</div>
-
                 <div class="row"><b>Certificate No:</b> ${clean(d.certificateNo)}</div>
-
-                <div class="row"><b>Issue Date:</b> ${clean(d.issueDate)}</div>
+                <div class="row"><b>Duration:</b> ${clean(d.duration)}</div>
 
                 <div class="row">
                     <b>Status:</b>
                     <span class="badge ${badgeClass}">
-                        ${clean(d.status)}
+                        ${statusText}
                     </span>
                 </div>
 
-                <div class="row"><b>Organisation:</b> ${clean(d.organisationName)}</div>
+                <div class="row"><b>Organisation:</b> ${org}</div>
 
             </div>
             `;
@@ -188,7 +188,6 @@ async function verifyCertificate(){
 
             result.innerHTML =
             "<p class='error'>❌ Record Not Found</p>";
-
         }
 
     }catch(err){
