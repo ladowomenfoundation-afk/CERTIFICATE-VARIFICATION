@@ -1,1 +1,1009 @@
+<!DOCTYPE html>
+<html lang="en">
 
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>ILADO WOMEN FOUNDATION - All India Internship Verification Portal</title>
+
+<style>
+
+*{
+box-sizing:border-box;
+}
+
+html,body{
+margin:0;
+padding:0;
+width:100%;
+min-height:100%;
+}
+
+body{
+font-family:Arial,Helvetica,sans-serif;
+background:linear-gradient(135deg,#eef4ff,#f4fff7);
+color:#222;
+}
+
+.header{
+background:linear-gradient(135deg,#082b67,#1565c0,#198754);
+color:#fff;
+text-align:center;
+padding:42px 18px;
+box-shadow:0 6px 25px rgba(0,0,0,.18);
+}
+
+.header h1{
+margin:0;
+font-size:30px;
+font-weight:800;
+letter-spacing:.3px;
+}
+
+.header h2{
+margin:10px 0 0;
+font-size:22px;
+font-weight:700;
+}
+
+.header p{
+margin:12px 0 0;
+font-size:15px;
+opacity:.95;
+}
+
+.container{
+width:94%;
+max-width:900px;
+margin:30px auto;
+}
+
+.search-box{
+background:#fff;
+padding:28px;
+border-radius:18px;
+box-shadow:0 8px 30px rgba(0,0,0,.10);
+}
+
+.title{
+font-size:22px;
+font-weight:800;
+color:#0b3d91;
+text-align:center;
+margin-bottom:8px;
+}
+
+.subtitle{
+font-size:14px;
+color:#777;
+text-align:center;
+margin-bottom:22px;
+line-height:1.6;
+}
+
+.input-wrap{
+position:relative;
+}
+
+input{
+width:100%;
+padding:16px 17px;
+border:1px solid #ccd3dc;
+border-radius:10px;
+font-size:16px;
+outline:none;
+background:#fff;
+}
+
+input:focus{
+border-color:#1565c0;
+box-shadow:0 0 0 4px rgba(21,101,192,.10);
+}
+
+.verify-button{
+width:100%;
+margin-top:15px;
+padding:16px;
+border:none;
+border-radius:10px;
+background:linear-gradient(135deg,#198754,#126b48);
+color:#fff;
+font-size:17px;
+font-weight:800;
+cursor:pointer;
+box-shadow:0 6px 15px rgba(25,135,84,.25);
+transition:.25s;
+}
+
+.verify-button:hover{
+transform:translateY(-2px);
+box-shadow:0 9px 20px rgba(25,135,84,.30);
+}
+
+.verify-button:disabled{
+opacity:.65;
+cursor:not-allowed;
+transform:none;
+}
+
+.loading{
+margin-top:22px;
+padding:20px;
+background:#fff;
+border-radius:14px;
+text-align:center;
+color:#555;
+box-shadow:0 5px 20px rgba(0,0,0,.06);
+}
+
+.loader{
+width:34px;
+height:34px;
+border:4px solid #ddd;
+border-top:4px solid #198754;
+border-radius:50%;
+margin:0 auto 12px;
+animation:spin 1s linear infinite;
+}
+
+@keyframes spin{
+to{
+transform:rotate(360deg);
+}
+}
+
+.error{
+margin-top:22px;
+padding:22px;
+background:#fff5f5;
+border:1px solid #f0c2c2;
+border-radius:14px;
+color:#c62828;
+text-align:center;
+line-height:1.6;
+}
+
+.result-card{
+margin-top:25px;
+background:#fff;
+border-radius:18px;
+overflow:hidden;
+box-shadow:0 8px 35px rgba(0,0,0,.12);
+}
+
+.verified-header{
+background:linear-gradient(135deg,#198754,#116b47);
+color:#fff;
+text-align:center;
+padding:30px 20px;
+}
+
+.check{
+width:70px;
+height:70px;
+margin:0 auto 12px;
+border-radius:50%;
+background:#fff;
+color:#198754;
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:40px;
+font-weight:900;
+box-shadow:0 5px 18px rgba(0,0,0,.18);
+}
+
+.verified-header h2{
+margin:6px 0;
+font-size:28px;
+}
+
+.verified-header p{
+margin:7px 0 0;
+font-size:14px;
+}
+
+.success-text{
+font-weight:bold;
+font-size:15px;
+}
+
+.details{
+padding:22px;
+}
+
+.detail-row{
+display:grid;
+grid-template-columns:40% 60%;
+padding:15px 7px;
+border-bottom:1px solid #edf0f2;
+}
+
+.detail-row:last-child{
+border-bottom:none;
+}
+
+.detail-label{
+font-weight:800;
+color:#333;
+}
+
+.detail-value{
+color:#555;
+word-break:break-word;
+}
+
+.status{
+display:inline-block;
+padding:6px 14px;
+border-radius:20px;
+background:#dff5e7;
+color:#157347;
+font-size:13px;
+font-weight:800;
+}
+
+.invalid-card{
+margin-top:25px;
+background:#fff;
+border-radius:18px;
+padding:28px;
+text-align:center;
+box-shadow:0 8px 30px rgba(0,0,0,.09);
+}
+
+.invalid-icon{
+width:60px;
+height:60px;
+border-radius:50%;
+background:#ffe5e5;
+color:#c62828;
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:30px;
+font-weight:bold;
+margin:0 auto 12px;
+}
+
+.invalid-card h3{
+color:#c62828;
+margin:5px 0;
+}
+
+.invalid-card p{
+color:#666;
+font-size:14px;
+line-height:1.6;
+}
+
+.footer{
+text-align:center;
+color:#777;
+font-size:13px;
+line-height:1.8;
+padding:28px 10px 40px;
+}
+
+.footer strong{
+color:#0b3d91;
+}
+
+.footer .official{
+color:#198754;
+font-weight:bold;
+}
+
+@media(max-width:600px){
+
+.header{
+padding:32px 15px;
+}
+
+.header h1{
+font-size:24px;
+}
+
+.header h2{
+font-size:18px;
+}
+
+.header p{
+font-size:14px;
+}
+
+.container{
+width:94%;
+margin:20px auto;
+}
+
+.search-box{
+padding:21px;
+}
+
+.title{
+font-size:19px;
+}
+
+.detail-row{
+display:block;
+padding:13px 5px;
+}
+
+.detail-label{
+font-size:13px;
+color:#0b3d91;
+margin-bottom:6px;
+}
+
+.detail-value{
+font-size:15px;
+}
+
+.verified-header h2{
+font-size:24px;
+}
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+
+<div class="header">
+
+<h1>
+WELCOME TO ILADO WOMEN FOUNDATION
+</h1>
+
+<h2>
+ALL INDIA INTERNSHIP VERIFICATION PORTAL
+</h2>
+
+<p>
+Official Digital Internship Certificate Verification System
+</p>
+
+</div>
+
+
+<div class="container">
+
+
+<div class="search-box">
+
+<div class="title">
+Verify Internship Certificate
+</div>
+
+<div class="subtitle">
+Enter Student Name, Internship ID or Certificate ID
+to verify the official internship record.
+</div>
+
+
+<div class="input-wrap">
+
+<input
+type="text"
+id="search"
+placeholder="Example: LWF/INT/2026/008"
+autocomplete="off"
+>
+
+</div>
+
+
+<button
+id="verifyButton"
+class="verify-button"
+onclick="verifyCertificate()"
+>
+VERIFY CERTIFICATE
+</button>
+
+</div>
+
+
+<div id="result"></div>
+
+
+<div class="footer">
+
+<strong>
+ILADO WOMEN FOUNDATION
+</strong>
+
+<br>
+
+<span class="official">
+Official Internship Verification Portal
+</span>
+
+<br>
+
+Digital verification of official internship records
+
+<br>
+
+All India Internship Programme
+
+</div>
+
+
+</div>
+
+
+<script>
+
+
+/* =========================================
+   GOOGLE APPS SCRIPT WEB APP
+========================================= */
+
+const API_URL =
+"https://script.google.com/macros/s/AKfycbx0DOGbtjjC2vVJyOcOZFcvxhSjUfmeRs0Xv6VJxLmkSo-aaH4xUbN75SNKMLExyKrbDA/exec";
+
+
+/* =========================================
+   SAFE VALUE
+========================================= */
+
+function safe(value){
+
+if(
+value === null ||
+value === undefined ||
+String(value).trim() === ""
+){
+
+return "-";
+
+}
+
+return String(value);
+
+}
+
+
+/* =========================================
+   URL PARAMETER
+========================================= */
+
+function getParameter(name){
+
+const params =
+new URLSearchParams(
+window.location.search
+);
+
+return params.get(name) || "";
+
+}
+
+
+/* =========================================
+   SHOW ERROR
+========================================= */
+
+function showError(message){
+
+document.getElementById("result").innerHTML = `
+
+<div class="error">
+
+<strong>
+Verification Error
+</strong>
+
+<br><br>
+
+${safe(message)}
+
+</div>
+
+`;
+
+}
+
+
+/* =========================================
+   SHOW LOADING
+========================================= */
+
+function showLoading(){
+
+document.getElementById("result").innerHTML = `
+
+<div class="loading">
+
+<div class="loader"></div>
+
+<strong>
+Verifying internship record...
+</strong>
+
+<br>
+
+Please wait
+
+</div>
+
+`;
+
+}
+
+
+/* =========================================
+   VERIFY CERTIFICATE
+========================================= */
+
+function verifyCertificate(){
+
+const input =
+document.getElementById("search");
+
+const result =
+document.getElementById("result");
+
+const button =
+document.getElementById("verifyButton");
+
+const search =
+input.value.trim();
+
+
+if(!search){
+
+showError(
+"Please enter Student Name, Internship ID or Certificate ID."
+);
+
+return;
+
+}
+
+
+button.disabled = true;
+
+button.innerText =
+"VERIFYING...";
+
+showLoading();
+
+
+const callbackName =
+"verificationCallback_" +
+Date.now();
+
+
+const script =
+document.createElement("script");
+
+
+let finished = false;
+
+
+function finish(){
+
+if(finished){
+return;
+}
+
+finished = true;
+
+clearTimeout(timeout);
+
+if(script.parentNode){
+
+script.parentNode.removeChild(script);
+
+}
+
+try{
+
+delete window[callbackName];
+
+}
+
+catch(error){
+
+window[callbackName] = undefined;
+
+}
+
+button.disabled = false;
+
+button.innerText =
+"VERIFY CERTIFICATE";
+
+}
+
+
+const timeout =
+setTimeout(function(){
+
+finish();
+
+showError(
+"Unable to connect to the verification server. Please try again."
+);
+
+},20000);
+
+
+window[callbackName] =
+function(data){
+
+finish();
+
+
+if(
+data &&
+data.verified === true &&
+data.data
+){
+
+showResult(data.data);
+
+}
+
+else{
+
+showInvalid(
+data &&
+data.message
+? data.message
+: "No matching internship record was found."
+);
+
+}
+
+};
+
+
+const requestURL =
+API_URL +
+"?search=" +
+encodeURIComponent(search) +
+"&callback=" +
+callbackName +
+"&_=" +
+Date.now();
+
+
+script.src =
+requestURL;
+
+
+script.onerror =
+function(){
+
+finish();
+
+showError(
+"Unable to connect to the verification server. Please try again."
+);
+
+};
+
+
+document.body.appendChild(script);
+
+}
+
+
+/* =========================================
+   VERIFIED RESULT
+========================================= */
+
+function showResult(d){
+
+const result =
+document.getElementById("result");
+
+
+result.innerHTML = `
+
+<div class="result-card">
+
+
+<div class="verified-header">
+
+<div class="check">
+✓
+</div>
+
+<h2>
+VERIFIED SUCCESSFULLY
+</h2>
+
+<p class="success-text">
+Official internship record found
+</p>
+
+<p>
+This internship certificate has been successfully verified.
+</p>
+
+</div>
+
+
+<div class="details">
+
+
+<div class="detail-row">
+
+<div class="detail-label">
+INTERNSHIP ID
+</div>
+
+<div class="detail-value">
+${safe(d.internshipId)}
+</div>
+
+</div>
+
+
+<div class="detail-row">
+
+<div class="detail-label">
+STUDENT NAME
+</div>
+
+<div class="detail-value">
+${safe(d.studentName)}
+</div>
+
+</div>
+
+
+<div class="detail-row">
+
+<div class="detail-label">
+FATHER'S NAME
+</div>
+
+<div class="detail-value">
+${safe(d.fatherName)}
+</div>
+
+</div>
+
+
+<div class="detail-row">
+
+<div class="detail-label">
+COLLEGE
+</div>
+
+<div class="detail-value">
+${safe(d.college)}
+</div>
+
+</div>
+
+
+<div class="detail-row">
+
+<div class="detail-label">
+ROLL NO.
+</div>
+
+<div class="detail-value">
+${safe(d.rollNo)}
+</div>
+
+</div>
+
+
+<div class="detail-row">
+
+<div class="detail-label">
+CLASS
+</div>
+
+<div class="detail-value">
+${safe(d.className)}
+</div>
+
+</div>
+
+
+<div class="detail-row">
+
+<div class="detail-label">
+SEMESTER
+</div>
+
+<div class="detail-value">
+${safe(d.semester)}
+</div>
+
+</div>
+
+
+<div class="detail-row">
+
+<div class="detail-label">
+DURATION
+</div>
+
+<div class="detail-value">
+${safe(d.duration)}
+</div>
+
+</div>
+
+
+<div class="detail-row">
+
+<div class="detail-label">
+CERTIFICATE ID
+</div>
+
+<div class="detail-value">
+${safe(d.certificateNo)}
+</div>
+
+</div>
+
+
+<div class="detail-row">
+
+<div class="detail-label">
+ISSUE DATE
+</div>
+
+<div class="detail-value">
+${safe(d.issueDate)}
+</div>
+
+</div>
+
+
+<div class="detail-row">
+
+<div class="detail-label">
+STATUS
+</div>
+
+<div class="detail-value">
+
+<span class="status">
+${safe(d.status || "VERIFIED")}
+</span>
+
+</div>
+
+</div>
+
+
+<div class="detail-row">
+
+<div class="detail-label">
+ORGANISATION NAME
+</div>
+
+<div class="detail-value">
+${safe(d.organisationName || "ILADO WOMEN FOUNDATION")}
+</div>
+
+</div>
+
+
+</div>
+
+</div>
+
+`;
+
+}
+
+
+/* =========================================
+   INVALID RESULT
+========================================= */
+
+function showInvalid(message){
+
+const result =
+document.getElementById("result");
+
+
+result.innerHTML = `
+
+<div class="invalid-card">
+
+<div class="invalid-icon">
+!
+</div>
+
+<h3>
+CERTIFICATE NOT FOUND
+</h3>
+
+<p>
+${safe(message)}
+</p>
+
+<p>
+Please check the Student Name, Internship ID
+or Certificate ID and try again.
+</p>
+
+</div>
+
+`;
+
+}
+
+
+/* =========================================
+   QR / URL AUTO VERIFICATION
+========================================= */
+
+window.addEventListener(
+"DOMContentLoaded",
+function(){
+
+const id =
+getParameter("id");
+
+const search =
+getParameter("search");
+
+
+if(id){
+
+document
+.getElementById("search")
+.value = id;
+
+verifyCertificate();
+
+}
+
+else if(search){
+
+document
+.getElementById("search")
+.value = search;
+
+verifyCertificate();
+
+}
+
+});
+
+
+/* =========================================
+   ENTER KEY
+========================================= */
+
+document
+.getElementById("search")
+.addEventListener(
+"keydown",
+function(event){
+
+if(event.key === "Enter"){
+
+verifyCertificate();
+
+}
+
+});
+
+</script>
+
+
+</body>
+
+</html>
